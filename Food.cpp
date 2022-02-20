@@ -18,7 +18,7 @@ void Food::initVar()
 sf::Vector2f Food::getRandomPos()
 {
 	foodPosition.x = rand() % 1800;
-	foodPosition.y = rand() % 1000;
+	foodPosition.y = rand() % 800;
 	return sf::Vector2f(foodPosition.x, foodPosition.y);
 }
 

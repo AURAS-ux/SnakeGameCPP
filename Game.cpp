@@ -1,6 +1,5 @@
 #include "Game.hpp"
 #include<iostream>
-#include<Windows.h>
 
 
 void Game::_initVar()
@@ -114,16 +113,25 @@ void Game::renderFood(sf::RenderTarget* tr)
 
 
 void Game::update()
-{	this->gameRender();
+{	
+	this->gameRender();
 	this->pollEvents();
-	
-	this->checkCollision(*food);
 	this->checkBorderCollsion();
 	
+	
+	
 	this->moveParts();
-	this->snakeObj->at(0).moveSnake(snakeDir * DeltaTime());
+	
+	
+	
+	this->snakeObj->begin()->moveSnake(snakeDir * DeltaTime());
+	if (this->checkCollision(*food) == 1) {
+		this->addNewSegment();
+	}
+	
 	
 	sf::sleep(_time);
+	
 }
 
 float Game::DeltaTime()
@@ -134,17 +142,20 @@ float Game::DeltaTime()
 void Game::addNewSegment()
 {
 	Snake segment;
-
-	segment.setPosition(sf::Vector2f(tail->getPosition().x - 52, tail->getPosition().y));
+	for (int i = 0; i < snakeObj->size(); i++) {
+		segment.setPosition(sf::Vector2f(snakeObj->back().getSnakeSegment().getPosition().x - 52, snakeObj->back().getSnakeSegment().getPosition().y));
+	}
+	//segment.setPosition(sf::Vector2f(tail->getPosition().x - 52, tail->getPosition().y));
 	snakeObj->push_back(segment);
+
 }
 
 void Game::moveParts()
 {
-	for (int i = 1; i < snakeObj->size(); i++) 
-	{
-		snakeObj->at(i).setPosition(snakeObj->at(i-1).getPosition());
+	for (int i = 1; i < snakeObj->size(); i++) {
+		this->snakeObj->at(i).setPosition(sf::Vector2f(this->snakeObj->at(i - 1).getPosition()));
 	}
+	
 }
 
 sf::Vector2u Game::getWindowSize()
@@ -152,14 +163,15 @@ sf::Vector2u Game::getWindowSize()
 	return this->window->getSize();
 }
 
-void Game::checkCollision(Food food)
+int Game::checkCollision(Food food)
 {
 	if (this->head->getSnakeSegment().getGlobalBounds().intersects(food.getFood()->getGlobalBounds())) {
 		this->food->setPos(food.getRandomPos());
 		score++;
-		this->addNewSegment();
+		return 1;
 	}
 	text->setString("Your score is:" + std::to_string(score));
+	return 0;
 }
 
 void Game::checkBorderCollsion()

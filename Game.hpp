@@ -36,7 +36,7 @@ public:
 	void addNewSegment();
 	void moveParts();
 	sf::Vector2u getWindowSize();
-	void checkCollision(Food);
+	int checkCollision(Food);
 	void checkBorderCollsion();
 };
 
